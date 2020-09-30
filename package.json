@@ -1,0 +1,29 @@
+{
+  "name": "betterunitcorrector",
+  "version": "1.0.0",
+  "description": "UnitCorrector for Discord, but better",
+  "scripts": {
+  	"lint": "eslint ./src/**/* --ext .ts",
+    "dev": "ts-node-dev",
+    "prebuild": "npm run lint",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonnopon3000/BetterUnitCorrector.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonnopon3000/BetterUnitCorrector/issues"
+  },
+  "author": "null",
+  "homepage": "https://github.com/jonnopon3000/BetterUnitCorrector#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "@typescript-eslint/eslint-plugin": "^4.3.0",
+    "@typescript-eslint/parser": "^4.3.0",
+    "eslint": "^7.10.0",
+    "ts-node-dev": "^1.0.0-pre.63",
+    "typescript": "^4.0.3"
+  }
+}
