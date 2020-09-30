@@ -1,9 +1,14 @@
 import { Message, Client, TextChannel } from 'discord.js';
+import { ImperialConverter } from '@lib/imperial-converter.class';
+import { MetricConverter } from '@lib/meric-converter.class';
 
 /**
  * Main BetterUnitCorrector class
  */
 class BetterUnitCorrector {
+
+    private milesRegex = /([0-9]+)\smiles/;
+    private kmRegex = /([0-9]+)\skm/;
 
     /**
      * Counter
@@ -32,7 +37,7 @@ class BetterUnitCorrector {
      */
     public ready(): void {
         this.retrieveChannel();
-        this.beginSendLoop();
+        // this.beginSendLoop();
     }
 
     /**
@@ -42,13 +47,25 @@ class BetterUnitCorrector {
      */
     public message(message: Message): void {
         // only respond in the specified channel, for now (testing purposes)
-        if (message.channel.id === process.env.TEST_CHANNEL_ID) {
-            if (message.content.toLowerCase() === 'hi bot') {
-                message.channel.send('hi!');
-            }
-            else if (message.content.toLowerCase() === 'bye bot') {
-                message.channel.send('bye!');
-            }
+        if (message.channel.id !== process.env.TEST_CHANNEL_ID) {
+            return;
+        }
+
+        const x = this.milesRegex.exec(message.content);
+        if (x) {
+            message.channel.send(`converted: ${ImperialConverter.convertMilesToKm(parseInt(x[0], 10))}`);
+        }
+
+        const y = this.kmRegex.exec(message.content);
+        if (y) {
+            message.channel.send(`converted: ${MetricConverter.convertKMsToMiles(parseInt(y[0], 10))}`);
+        }
+
+        if (message.content.toLowerCase() === 'hi bot') {
+            message.channel.send(`> ${message.content}\nhi!`);
+        }
+        else if (message.content.toLowerCase() === 'bye bot') {
+            message.channel.send(`> ${message.content}\nbye!`);
         }
     }
 
