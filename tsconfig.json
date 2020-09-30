@@ -1,19 +1,24 @@
 {
-	"compilerOptions": {
-		"baseUrl": "./src",
-		"outDir": "./dist",
-		"inlineSourceMap": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"target": "es6",
-		"strict": true,
-		"paths": {
-			"@app": [
-				"index.ts"
-			]
-		}
-	},
-	"include": [
-		"src/**/*"
-	]
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "outDir": "./dist",
+        "inlineSourceMap": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es6",
+        "strict": true,
+        "paths": {
+            "@config/*": [
+                "config/*"
+            ],
+            "@lib/*": [
+                "lib/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ]
 }
