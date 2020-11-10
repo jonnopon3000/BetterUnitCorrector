@@ -20,17 +20,21 @@ if (!process.env.DISCORD_BOT_TOKEN) {
     console.error('NO BOT TOKEN FOUND IN ENVIONMENT');
     process.exit(1);
 }
-if (!process.env.TEST_CHANNEL_ID) {
+if (!process.env.MODE) {
+    console.error('NO MODE FOUND IN ENVIRONMENT');
+    process.exit(1);
+}
+if (!process.env.DEV_CHANNEL_ID) {
     console.error('NO DISCORD CHANNEL ID IN ENVIRONMENT');
     process.exit(1);
 }
 
 // set up the Discord Client and BetterUnitCorrector bot instance
 const client = new Client();
-const bot = new BetterUnitCorrector(client);
+const bot = new BetterUnitCorrector();
 
 /** hook the 'ready' Client event */
-client.on('ready', bot.ready.bind(bot));
+// client.on('ready', bot.ready.bind(bot));
 
 /** hook the 'message' Client event */
 client.on('message', bot.message.bind(bot));

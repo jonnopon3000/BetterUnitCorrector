@@ -1,44 +1,16 @@
-import { Message, Client, TextChannel } from 'discord.js';
-import { ImperialConverter } from '@lib/imperial-converter.class';
-import { MetricConverter } from '@lib/meric-converter.class';
+import { Message } from 'discord.js';
+import { ImperialConverter } from '@lib/convert/imperial-converter.class';
+import { MetricConverter } from '@lib/convert/meric-converter.class';
+import { ImperialDetector } from '@lib/detect/imperial-detector.class';
+import { MetricDetector } from '@lib/detect/metric-detector.class';
 
 /**
  * Main BetterUnitCorrector class
  */
 class BetterUnitCorrector {
 
-    private milesRegex = /([0-9]+)\smiles/;
-    private kmRegex = /([0-9]+)\skm/;
-
-    /**
-     * Counter
-     */
-    private count = 0;
-
-    /**
-     * Maximum value for the counter
-     */
-    private maxCount = 10;
-
-    /**
-     * TextChannel to send messages to
-     */
-    private channel?: TextChannel;
-
-    /**
-     * Constructor
-     * 
-     * @param client the Discord client
-     */
-    public constructor(private client: Client) { }
-
-    /**
-     * Discord Client Ready hook
-     */
-    public ready(): void {
-        this.retrieveChannel();
-        // this.beginSendLoop();
-    }
+    private imperialDetector = new ImperialDetector();
+    private MetricDetector = new MetricDetector();
 
     /**
      * Read messages and respond appropriately
@@ -46,19 +18,26 @@ class BetterUnitCorrector {
      * @param message 
      */
     public message(message: Message): void {
-        // only respond in the specified channel, for now (testing purposes)
-        if (message.channel.id !== process.env.TEST_CHANNEL_ID) {
+        if (process.env.MODE === 'dev') {
+            // in devmode, only respond in the specified channel
+            if (message.channel.id !== process.env.DEV_CHANNEL_ID) {
+                return;
+            }
+        }
+
+        // do not let the bot respond to its own messages
+        if (message.author.bot) {
             return;
         }
 
-        const x = this.milesRegex.exec(message.content);
-        if (x) {
-            message.channel.send(`converted: ${ImperialConverter.convertMilesToKm(parseInt(x[0], 10))}`);
+        const i = this.imperialDetector.detect(message.content);
+        if (i) {
+            message.channel.send(`converted: ${ImperialConverter.convertMilesToKm(parseInt(i[0], 10))} km`);
         }
 
-        const y = this.kmRegex.exec(message.content);
-        if (y) {
-            message.channel.send(`converted: ${MetricConverter.convertKMsToMiles(parseInt(y[0], 10))}`);
+        const m = this.MetricDetector.detect(message.content)
+        if (m) {
+            message.channel.send(`converted: ${MetricConverter.convertKMsToMiles(parseInt(m[0], 10))} miles`);
         }
 
         if (message.content.toLowerCase() === 'hi bot') {
@@ -67,30 +46,6 @@ class BetterUnitCorrector {
         else if (message.content.toLowerCase() === 'bye bot') {
             message.channel.send(`> ${message.content}\nbye!`);
         }
-    }
-
-    /**
-     * Retrieve the channel specified by the environment to send messages to
-     */
-    private async retrieveChannel(): Promise<void> {
-        // unsafe casting because in early dev I know the channel in question exists
-        this.channel = await this.client.channels.fetch(process.env.TEST_CHANNEL_ID ?? '') as TextChannel;
-    }
-
-    /**
-     * Testing timed messages
-     * 
-     * @param max max to count to, defaulting to this.maxCount
-     */
-    private beginSendLoop(max: number = this.maxCount): void {
-        const i = setInterval(() => {
-            if (++this.count <= max) {
-                this.channel?.send(this.count);
-            }
-            else {
-                clearInterval(i);
-            }
-        }, 5000);
     }
 }
 
