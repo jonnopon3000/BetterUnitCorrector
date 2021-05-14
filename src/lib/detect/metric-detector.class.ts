@@ -1,3 +1,5 @@
+import { IDetector } from 'types/detector';
+
 class MetricDetector implements IDetector {
 
     public readonly regex = /([0-9]+)\s?km/;
